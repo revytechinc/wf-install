@@ -29,7 +29,7 @@ for h in $HOSTS; do
 	elev=$(elevate_mode "$h")
 	logf=$(log_path_for_host "$h" uninstall-stack)
 	set +e
-	remote_sh "$h" env elev_mode="$elev" pkg_line="$STACK_PKGS" purge="$PURGE" sh -s >"$logf" 2>&1 <<'EOS'
+	remote_sh "$h" "env elev_mode='$elev' pkg_line='$STACK_PKGS' purge='$PURGE' sh -s" >"$logf" 2>&1 <<'EOS'
 set -eu
 run() {
   case "$elev_mode" in

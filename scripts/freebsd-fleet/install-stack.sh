@@ -34,7 +34,7 @@ for h in $HOSTS; do
 
 	# PKGS already charset-validated; expand safely on remote via set -- 
 	set +e
-	remote_sh "$h" env elev_mode="$elev" pkg_line="$PKGS" sh -s >"$logf" 2>&1 <<'EOS'
+	remote_sh "$h" "env elev_mode='$elev' pkg_line='$PKGS' sh -s" >"$logf" 2>&1 <<'EOS'
 set -eu
 run() {
   case "$elev_mode" in

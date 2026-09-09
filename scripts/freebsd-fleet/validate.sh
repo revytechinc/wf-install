@@ -28,7 +28,7 @@ for h in $HOSTS; do
 	esac
 	logf=$(log_path_for_host "$h" validate)
 	set +e
-	remote_sh "$h" env MODE="$MODE" pkg_line="$STACK_PKGS" sh -s >"$logf" 2>&1 <<'EOS'
+	remote_sh "$h" "env MODE='$MODE' pkg_line='$STACK_PKGS' sh -s" >"$logf" 2>&1 <<'EOS'
 set -eu
 PASS=0; FAIL=0
 pass(){ printf "  PASS %s\n" "$*"; PASS=$((PASS+1)); }
@@ -58,7 +58,11 @@ if [ "$MODE" = desktop ]; then
   pkg info -e ly 2>/dev/null && pass "ly" || fail "ly"
   grep -q "getty Ly" /etc/ttys 2>/dev/null && pass "ttys Ly" || fail "ttys Ly"
   [ -f /usr/local/share/wayland-sessions/wayfire.desktop ] && pass "wayfire.desktop" || fail "wayfire.desktop"
-  [ -x /usr/sbin/virtual_oss ] || pkg info -e virtual_oss 2>/dev/null
+  if [ -x /usr/sbin/virtual_oss ] || [ -x /usr/local/sbin/virtual_oss ] || pkg info -e virtual_oss 2>/dev/null; then
+    pass "virtual_oss present"
+  else
+    fail "virtual_oss missing"
+  fi
   [ "$(sysrc -n virtual_oss_enable 2>/dev/null || echo NO)" = YES ] && pass "virtual_oss_enable" || fail "virtual_oss_enable"
   if service virtual_oss status >/dev/null 2>&1 || pgrep -x virtual_oss >/dev/null 2>&1; then
     pass "virtual_oss running"

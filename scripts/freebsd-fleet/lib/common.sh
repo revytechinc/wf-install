@@ -93,22 +93,6 @@ remote_sh() {
 	    -- "$_host" "$@"
 }
 
-# Run remote script from stdin; elev mode is none|doas|sudo|sudo_n (closed set).
-# Usage: remote_script HOST elev_mode < script.sh
-# Writes combined output to FD 3 if open, else stdout. Exit status is remote's.
-remote_script() {
-	_host=$(host_fqdn "$1") || return 1
-	_elev_mode=$2
-	case "$_elev_mode" in
-		none|doas|sudo|sudo_n) ;;
-		*) echo "invalid elev mode: $_elev_mode" >&2; return 2 ;;
-	esac
-	ssh -o BatchMode=yes \
-	    -o ConnectTimeout="$SSH_CONNECT_TIMEOUT" \
-	    -o ConnectionAttempts="$SSH_ATTEMPTS" \
-	    -o "StrictHostKeyChecking=$SSH_STRICT" \
-	    -- "$_host" "elev_mode='$_elev_mode' sh -s" 
-}
 
 elevate_mode() {
 	if remote_sh "$1" 'id -u' 2>/dev/null | grep -qx 0; then
