@@ -18,7 +18,7 @@ for h in $HOSTS; do
 		busy) defer "$h busy — retry later"; continue ;;
 	esac
 	elev=$(elevate_mode "$h")
-	validate_elev_mode "$elev"
+	validate_elev_mode "$elev" || { defer "$h invalid elev_mode"; continue; }
 	logf=$(log_path_for_host "$h" configure-voss)
 	set +e
 	remote_sh "$h" "env elev_mode='$elev' sh -s" >"$logf" 2>&1 <<'EOS'
@@ -32,7 +32,7 @@ run() {
     *) echo "bad elev_mode"; exit 2 ;;
   esac
 }
-if ! [ -x /usr/sbin/virtual_oss ] && ! [ -x /usr/local/sbin/virtual_oss ]; then
+if ! command -v virtual_oss >/dev/null 2>&1; then
   run pkg install -y virtual_oss
 fi
 run sysrc -f /boot/loader.conf cuse_load=YES 2>/dev/null || true

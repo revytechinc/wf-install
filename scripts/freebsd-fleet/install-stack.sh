@@ -30,7 +30,7 @@ for h in $HOSTS; do
 		busy) defer "$h busy — retry later"; continue ;;
 	esac
 	elev=$(elevate_mode "$h")
-	validate_elev_mode "$elev"
+	validate_elev_mode "$elev" || { defer "$h invalid elev_mode"; continue; }
 	logf=$(log_path_for_host "$h" install-stack)
 
 	# PKGS / elev closed-set validated before embedding in remote env string.
