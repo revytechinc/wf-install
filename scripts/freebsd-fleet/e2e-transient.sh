@@ -30,12 +30,13 @@ for h in $HOSTS; do
 	}
 	# Note: trap per-iteration is tricky in sh; cleanup explicitly below
 
-	if ! "$DIR/preflight.sh" "$h"; then
-		# preflight FAIL is hard; DEFER-only still exits 0
-		if [ $? -ne 0 ]; then
-			fail "$h preflight hard-fail — skip install"
-			continue
-		fi
+	set +e
+	"$DIR/preflight.sh" "$h"
+	pref_rc=$?
+	set -e
+	if [ "$pref_rc" -ne 0 ]; then
+		fail "$h preflight hard-fail — skip install"
+		continue
 	fi
 
 	if "$DIR/install-stack.sh" "$h"; then

@@ -177,8 +177,8 @@ for h in $HOSTS; do
 	section "preflight $h"
 	state=$(probe_host "$h")
 	case "$state" in
-		unreachable)
-			defer "$h unreachable (may be mid kernel-test / net blip) — keep in matrix"
+		unreachable|invalid)
+			defer "$h $state (may be mid kernel-test / net blip) — keep in matrix"
 			continue
 			;;
 		busy)
@@ -186,17 +186,20 @@ for h in $HOSTS; do
 			continue
 			;;
 	esac
-	logf="$LOG_DIR/preflight-$h.log"
-	if remote_sh "$h" "$REMOTE_PREFLIGHT" 2>&1 | tee "$logf"; then
+	logf=$(log_path_for_host "$h" preflight)
+	set +e
+	remote_sh "$h" sh -s >"$logf" 2>&1 <<EOF
+$REMOTE_PREFLIGHT
+EOF
+	rc=$?
+	set -e
+	cat "$logf"
+	if [ "$rc" -eq 0 ]; then
 		pass "$h preflight"
+	elif grep -q 'LOCAL_SUMMARY' "$logf" && grep -q 'fail=[1-9]' "$logf"; then
+		fail "$h preflight (see $logf)"
 	else
-		# If remote reported LOCAL_SUMMARY with fails, count as fail
-		if grep -q 'LOCAL_SUMMARY' "$logf" && grep -q 'fail=[1-9]' "$logf"; then
-			fail "$h preflight (see $logf)"
-		else
-			# unexpected ssh/script abort while host was "ok" — still soft if connection died mid-flight
-			defer "$h preflight aborted mid-run (see $logf)"
-		fi
+		defer "$h preflight aborted mid-run (rc=$rc, see $logf)"
 	fi
 done
 

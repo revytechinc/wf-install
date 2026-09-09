@@ -15,12 +15,11 @@ hosts**. They do **not** build from source.
 
 | Role | Hosts | Behavior |
 |------|-------|----------|
-| desktop | 001 002 003 004 009 | persistent Ly + virtual_oss + Wayfire pkgs |
-| transient | 005 006 008 | install → validate → **uninstall completely** |
+| desktop | `$DESKTOP_HOSTS` (default freedev 001–004, 009) | persistent Ly + VOSS + Wayfire |
+| transient | `$TRANSIENT_HOSTS` (default 005, 006, 008) | install → validate → **full uninstall** |
 
-Jenkins for package builds: `https://jenkins.cloudbsd.org` (jail on **freedev005**
-today; migrate to 008 later). Drive via `jenkins-through-mcp` when the CI MCP
-is up; otherwise API + `~/.creds/jenkins-admin` / `jenkins-build`.
+Override hosts via env. Jenkins package builds: skill `jenkins-through-mcp`
+(controller hostname in that skill; credentials under `~/.creds/`, never here).
 
 ## Scripts
 
