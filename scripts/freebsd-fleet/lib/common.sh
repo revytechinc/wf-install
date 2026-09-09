@@ -69,6 +69,37 @@ validate_pkg_list() {
 	done
 }
 
+# Closed sets for values embedded in remote "env …='$val'" strings.
+validate_elev_mode() {
+	case "$1" in
+		none|doas|sudo|sudo_n) ;;
+		*)
+			echo "invalid elev_mode: $1" >&2
+			return 1
+			;;
+	esac
+}
+
+validate_purge_flag() {
+	case "$1" in
+		0|1) ;;
+		*)
+			echo "invalid purge flag: $1" >&2
+			return 1
+			;;
+	esac
+}
+
+validate_fleet_mode() {
+	case "$1" in
+		desktop|transient|stack) ;;
+		*)
+			echo "invalid fleet MODE: $1" >&2
+			return 1
+			;;
+	esac
+}
+
 host_fqdn() {
 	validate_host_token "$1" || return 1
 	case "$1" in

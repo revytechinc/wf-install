@@ -30,9 +30,10 @@ for h in $HOSTS; do
 		busy) defer "$h busy — retry later"; continue ;;
 	esac
 	elev=$(elevate_mode "$h")
+	validate_elev_mode "$elev"
 	logf=$(log_path_for_host "$h" install-stack)
 
-	# PKGS already charset-validated; expand safely on remote via set -- 
+	# PKGS / elev closed-set validated before embedding in remote env string.
 	set +e
 	remote_sh "$h" "env elev_mode='$elev' pkg_line='$PKGS' sh -s" >"$logf" 2>&1 <<'EOS'
 set -eu

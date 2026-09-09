@@ -18,6 +18,7 @@ for h in $HOSTS; do
 		busy) defer "$h busy — retry later"; continue ;;
 	esac
 	elev=$(elevate_mode "$h")
+	validate_elev_mode "$elev"
 	logf=$(log_path_for_host "$h" configure-ly)
 	set +e
 	remote_sh "$h" "env elev_mode='$elev' sh -s" >"$logf" 2>&1 <<'EOS'

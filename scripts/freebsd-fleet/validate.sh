@@ -18,6 +18,7 @@ for arg in "$@"; do
 done
 [ -n "$HOSTS" ] || { echo "usage: $0 [--desktop|--transient] HOST ..." >&2; exit 2; }
 validate_pkg_list "$STACK_PKGS"
+validate_fleet_mode "$MODE"
 
 for h in $HOSTS; do
 	section "validate $h ($MODE)"
