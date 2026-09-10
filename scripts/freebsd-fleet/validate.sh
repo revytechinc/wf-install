@@ -59,7 +59,10 @@ if [ "$MODE" = desktop ]; then
   pkg info -e ly 2>/dev/null && pass "ly" || fail "ly"
   grep -q "getty Ly" /etc/ttys 2>/dev/null && pass "ttys Ly" || fail "ttys Ly"
   [ -f /usr/local/share/wayland-sessions/wayfire.desktop ] && pass "wayfire.desktop" || fail "wayfire.desktop"
-  if command -v virtual_oss >/dev/null 2>&1 || pkg info -e virtual_oss 2>/dev/null; then
+  if [ -x /usr/sbin/virtual_oss ] \
+      || [ -x /usr/local/sbin/virtual_oss ] \
+      || [ -x /usr/local/bin/virtual_oss ] \
+      || pkg info -e virtual_oss 2>/dev/null; then
     pass "virtual_oss present"
   else
     fail "virtual_oss missing"

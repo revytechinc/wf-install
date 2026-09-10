@@ -18,6 +18,7 @@ for arg in "$@"; do
 done
 [ -n "$HOSTS" ] || { echo "usage: $0 [--purge-config] HOST ..." >&2; exit 2; }
 validate_pkg_list "$STACK_PKGS"
+validate_purge_flag "$PURGE" || exit 2
 
 for h in $HOSTS; do
 	section "uninstall-stack $h"
@@ -28,7 +29,6 @@ for h in $HOSTS; do
 	esac
 	elev=$(elevate_mode "$h")
 	validate_elev_mode "$elev" || { defer "$h invalid elev_mode"; continue; }
-	validate_purge_flag "$PURGE" || { defer "$h invalid purge"; continue; }
 	logf=$(log_path_for_host "$h" uninstall-stack)
 	set +e
 	remote_sh "$h" "env elev_mode='$elev' pkg_line='$STACK_PKGS' purge='$PURGE' sh -s" >"$logf" 2>&1 <<'EOS'
