@@ -34,8 +34,7 @@ run() {
 }
 if ! [ -x /usr/sbin/virtual_oss ] \
     && ! [ -x /usr/local/sbin/virtual_oss ] \
-    && ! [ -x /usr/local/bin/virtual_oss ] \
-    && ! pkg info -e virtual_oss 2>/dev/null; then
+    && ! [ -x /usr/local/bin/virtual_oss ]; then
   run pkg install -y virtual_oss
 fi
 run sysrc -f /boot/loader.conf cuse_load=YES 2>/dev/null || true
